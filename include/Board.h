@@ -1,7 +1,7 @@
 #ifndef _OTHELLO_BOARD_H_
 #define _OTHELLO_BOARD_H_
 
-enum Grid { V, B, W };
+enum Disc { V, B, W };
 enum Position
 {
     a1, b1, c1, d1, e1, f1, g1, h1,
@@ -12,22 +12,46 @@ enum Position
     a6, b6, c6, d6, e6, f6, g6, h6,
     a7, b7, c7, d7, e7, f7, g7, h7,
     a8, b8, c8, d8, e8, f8, g8, h8,
+    MAX_POSITION_NUM
+};
+
+struct DiscUtil
+{
+    static bool isOccupied(Disc disc)
+    {
+        return disc == B || disc == W;
+    }
+
+    static bool isVacant(Disc disc)
+    {
+        return disc == V;
+    }
+
+    static bool isWhiteDisc(Disc disc)
+    {
+        return disc == W;
+    }
+
+    static bool isBlackDisc(Disc disc)
+    {
+        return disc == B;
+    }
 };
 
 struct Board
 {
     Board();
-    Grid& at(Position);
     void turn(Position);
 
+    Disc& at(Position);
     void print() const;
+    void reset();
 
 private:
     void init();
 
 private:
-    enum { MAX_NUM = h8+1 };
-    Grid grids[MAX_NUM];
+    Disc discs[MAX_POSITION_NUM];
 };
 
 #endif

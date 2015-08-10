@@ -16,7 +16,7 @@ namespace
 */
     const int ROWS = 8;
     const int COLUMNS = 8;
-    const Grid GIVEN_BOARD[ROWS * COLUMNS] = 
+    const Disc GIVEN_BOARD[ROWS * COLUMNS] = 
     {
         V, V, V, V, V, V, V, V,
         V, V, V, V, V, V, V, V,
@@ -44,7 +44,7 @@ TEST(BoardTest, should_init_board)
 TEST(BoardTest, should_print_board)
 {
     Board b;
-    b.print();
+//    b.print();
 }
 
 TEST(BoardTest, should_turn_over_grid)
@@ -53,5 +53,4 @@ TEST(BoardTest, should_turn_over_grid)
     b.turn(e4);
     ASSERT_EQ(b.at(e4), W);
 }
-
 

@@ -8,27 +8,34 @@ Board::Board()
 
 void Board::init()
 {
-    for(int i = a1; i < MAX_NUM; ++i)
+    for(int i = a1; i < MAX_POSITION_NUM; ++i)
     {
-        grids[i] = V;
+        discs[i] = V;
     }
 
-    at(e4) = B;
-    at(d5) = B;
-    at(d4) = W;
-    at(e5) = W;
-}
-
-Grid& Board::at(Position position)
-{
-    return grids[position];
+    discs[e4] = B;
+    discs[d5] = B;
+    discs[d4] = W;
+    discs[e5] = W;
 }
 
 namespace
 {
-    char to_c(Grid grid)
+    Disc nullDisc = V;
+}
+
+Disc& Board::at(Position position)
+{
+    if(position < a1 || position > h8) return nullDisc;
+
+    return discs[position];
+}
+
+namespace
+{
+    char to_c(Disc disc)
     {
-        switch(grid)
+        switch(disc)
         {
             case V: return 'V';
             case B: return 'B';
@@ -40,25 +47,32 @@ namespace
 
 void Board::print() const
 {
-    for(int i = a1; i < MAX_NUM; ++i)
+    for(int i = a1; i < MAX_POSITION_NUM; ++i)
     {
         if(i % 8 == 0) 
             std::cout << "\n";
 
-        std::cout << to_c(grids[i]) << ",";
+        std::cout << to_c(discs[i]) << ",";
     }
+
+    std::cout << "\n";
 }
 
-void Board::turn(Position position)
+void Board::turn(Position p)
 {
-    if(at(position) == B) 
+    if( DiscUtil::isBlackDisc(at(p)) ) 
     {
-        at(position) = W;
+        discs[p] = W;
         return;
     }
 
-    if(at(position) == W) 
+    if( DiscUtil::isWhiteDisc(at(p)) ) 
     {
-        at(position) = B;
+        discs[p] = B;
     }
+}
+
+void Board::reset()
+{
+    init();
 }
