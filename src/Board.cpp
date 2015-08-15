@@ -6,11 +6,27 @@ Board::Board()
     init();
 }
 
+Board& Board::operator=(const Board& board)
+{
+	::memmove(discs, board.discs, sizeof(discs));
+	return *this;
+}
+
+Board::Board(const Disc* board)
+{
+	if(board == 0) return;
+
+	for(int i = a1; i < MAX_POSITION_NUM; ++i)
+	{
+		discs[i] = board[i];
+	}
+}
+
 void Board::init()
 {
     for(int i = a1; i < MAX_POSITION_NUM; ++i)
     {
-        discs[i] = V;
+        discs[i] = _;
     }
 
     discs[e4] = B;
@@ -21,14 +37,14 @@ void Board::init()
 
 namespace
 {
-    Disc nullDisc = V;
+    Disc nullDisc = _;
 }
 
-Disc& Board::at(Position position)
+Disc Board::at(Position p) const
 {
-    if(position < a1 || position > h8) return nullDisc;
+    if( ! isValid(p)) return nullDisc;
 
-    return discs[position];
+    return discs[p];
 }
 
 namespace
@@ -37,7 +53,7 @@ namespace
     {
         switch(disc)
         {
-            case V: return 'V';
+            case _: return '_';
             case B: return 'B';
             case W: return 'W';
             default: return 'V';
@@ -47,32 +63,53 @@ namespace
 
 void Board::print() const
 {
+	std::cout <<  "\n" << "a b c d e f g h" << std::endl;
+
+	enum { COLUMN_NUM = 8 };
+	for(int i = a1; i < MAX_POSITION_NUM; ++i)
+    {
+        if(i % COLUMN_NUM == 0 && i != 0)
+        {
+            std::cout << " " << i/COLUMN_NUM << "\n";
+        }
+        std::cout << to_c(discs[i]) << " ";
+    }
+
+    std::cout << " " << COLUMN_NUM << "\n";
+}
+
+void Board::trueOver(Position p)
+{
+	if( ! isOccupied(p)) return;
+
+	discs[p] = (at(p) == B) ? W : B;
+}
+
+void Board::place(Position p, Disc disc)
+{
+	if( ! isValid(p)) return;
+
+	discs[p] = disc;
+}
+
+bool Board::isOccupied(Position p) const
+{
+	if( ! isValid(p)) return false;
+
+	return discs[p] == B || discs[p] == W;
+}
+
+bool Board::operator==(const Board& rsh) const
+{
     for(int i = a1; i < MAX_POSITION_NUM; ++i)
     {
-        if(i % 8 == 0) 
-            std::cout << "\n";
-
-        std::cout << to_c(discs[i]) << ",";
+    	if(discs[i] != rsh.discs[i]) return false;
     }
 
-    std::cout << "\n";
+    return true;
 }
 
-void Board::turn(Position p)
+bool Board::isValid(Position p) const
 {
-    if( DiscUtil::isBlackDisc(at(p)) ) 
-    {
-        discs[p] = W;
-        return;
-    }
-
-    if( DiscUtil::isWhiteDisc(at(p)) ) 
-    {
-        discs[p] = B;
-    }
-}
-
-void Board::reset()
-{
-    init();
+	return p >= a1 && p <= h8;
 }

@@ -2,19 +2,22 @@
 #define _OTHELLO_MOVES_H_
 
 #include <list>
-#include "Board.h"
+#include "Position.h"
 
 struct Moves
 {
-    Moves();
+    Moves(std::initializer_list<Position> list = {});
 
     void push(Position);
     Position pop();
-    size_t size() const;
-    bool isEmpty() const;
-    bool contains(Position) const;
     void clear();
+    Moves& operator+(const Moves&);
 
+    bool isEmpty() const;
+    bool operator==(const Moves&) const;
+private:
+    size_t size() const;
+    bool contains(Position) const;
 private:
     std::list<Position> moves;
 };

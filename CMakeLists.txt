@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-PROJECT("game-of-life")
+PROJECT("othello")
 
 MACRO(sort_files source_files)
     SET(sgbd_cur_dir ${CMAKE_CURRENT_SOURCE_DIR})
@@ -58,14 +58,14 @@ sort_files(all_files)
 
 link_directories("${CMAKE_CURRENT_SOURCE_DIR}/3th/lib")
 
-add_executable(game-of-life ${all_files})
+add_executable(othello ${all_files})
 
 if(MSVC80)
-    target_link_libraries(game-of-life gtest-vc80)
+    target_link_libraries(othello gtest-vc80)
 elseif(MSVC90)
-    target_link_libraries(game-of-life gtest-vc90)
+    target_link_libraries(othello gtest-vc90)
 elseif(MSVC10)
-    target_link_libraries(game-of-life gtest-vc10)
+    target_link_libraries(othello gtest-vc10)
 else(UNIX)
-    target_link_libraries(game-of-life gtest pthread stdc++)
+    target_link_libraries(othello gtest pthread stdc++)
 endif(MSVC80)

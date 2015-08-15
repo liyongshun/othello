@@ -33,7 +33,7 @@ fi
 echo "*******************************************************************************"
 echo "start run tests..."
 
-./game-of-life --gtest_color=yes $1 $2
+./othello --gtest_color=yes $1 $2
 
 if [ $? -ne 0 ]; then
     echo "build ${working_path} fail"

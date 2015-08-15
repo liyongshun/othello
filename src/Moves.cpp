@@ -1,18 +1,32 @@
 #include "Moves.h"
 
-Moves::Moves()
+Moves::Moves(std::initializer_list<Position> list)
 {
+	for(auto iter = list.begin(); iter != list.end(); ++iter)
+	{
+		push(*iter);
+	}
 }
 
 void Moves::push(Position position)
 {
-    moves.push_back(position);
+	if(contains(position)) return;
+
+	moves.push_back(position);
+}
+
+Moves& Moves::operator+(const Moves& rhs)
+{
+	for(auto iter = rhs.moves.begin(); iter != rhs.moves.end(); ++iter)
+	{
+		push(*iter);
+	}
+
+	return *this;
 }
 
 Position Moves::pop()
 {
-    if(isEmpty()) return MAX_POSITION_NUM;
-
     Position front = moves.front();
     moves.pop_front();
     return front;
@@ -42,4 +56,16 @@ bool Moves::contains(Position p) const
     }
 
     return false;
+}
+
+bool Moves::operator==(const Moves& rsh) const
+{
+	if(size() != rsh.size()) return false;
+
+	for(auto iter = rsh.moves.begin(); iter != rsh.moves.end(); ++iter)
+	{
+		if( ! contains(*iter)) return false;
+	}
+
+	return true;
 }
