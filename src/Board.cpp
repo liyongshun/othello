@@ -99,6 +99,11 @@ bool Board::isOccupied(Position p) const
 	return discs[p] == B || discs[p] == W;
 }
 
+bool Board::onBoard(Position p) const
+{
+	return p >= a1 && p <= h8;
+}
+
 bool Board::operator==(const Board& rsh) const
 {
     for(int i = a1; i < MAX_POSITION_NUM; ++i)

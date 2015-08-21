@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
 #include "Board.h"
-#include <iostream>
 
 namespace
 {

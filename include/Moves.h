@@ -15,8 +15,10 @@ struct Moves
 
     bool isEmpty() const;
     bool operator==(const Moves&) const;
-private:
+
+    void print() const;
     size_t size() const;
+private:
     bool contains(Position) const;
 private:
     std::list<Position> moves;

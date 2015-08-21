@@ -12,6 +12,7 @@ struct Board
     Board& operator=(const Board&);
 
     Disc at(Position) const;
+    bool onBoard(Position) const;
     bool isOccupied(Position) const;
     bool operator==(const Board& rsh) const;
     void print() const;

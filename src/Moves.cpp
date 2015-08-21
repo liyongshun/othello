@@ -1,4 +1,5 @@
 #include "Moves.h"
+#include <iostream>
 
 Moves::Moves(std::initializer_list<Position> list)
 {

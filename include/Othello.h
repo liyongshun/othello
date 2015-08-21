@@ -4,24 +4,26 @@
 #include "Board.h"
 #include "Moves.h"
 
-typedef Position (*Action)(Position);
+struct Removable;
 
 struct Othello
 {
 	Othello();
 	void refreshBoard(const Board&);
-    const Board& capture(Position original, Position move);
-    const Board& retract(Position original, Position move);
+    const Board& capture(Position move);
+    const Board& retract();
     const Moves& getAvailableMoves(Position);
-    const Moves& getAllAvailableMoves(Disc);
+    const Moves& thinkMoves(Disc);
     const Board& getBoard() const;
 
 private:
     bool hasNext(Position curr, Position moves) const;
-    void doTurn(Position curr, Position moves);
-    void find(Position, Action);
+    void find(Position, const Removable&);
+    void turn(Position original, Position moves);
+    void doTurn(Position from, Position to, const Removable&);
 private:
     Board board;
+    Board lastBoard;
 };
 
 #endif

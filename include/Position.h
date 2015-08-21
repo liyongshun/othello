@@ -1,6 +1,8 @@
 #ifndef INCLUDE_POSITION_H_
 #define INCLUDE_POSITION_H_
 
+#include <string>
+
 enum Disc { _, B, W };
 enum Position
 {
@@ -13,6 +15,7 @@ enum Position
     a7, b7, c7, d7, e7, f7, g7, h7,
     a8, b8, c8, d8, e8, f8, g8, h8,
 };
+
 enum { MAX_POSITION_NUM = h8+1 };
 
 #endif /* INCLUDE_POSITION_H_ */

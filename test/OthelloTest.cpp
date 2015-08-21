@@ -9,12 +9,12 @@ namespace
 		{
 			Moves availableMoves = othello.getAvailableMoves(original);
 			ASSERT_EQ(expectMoves, availableMoves);
-			while( ! availableMoves.isEmpty())
-			{
-				Position move = availableMoves.pop();
-				othello.capture(original, move).print();
-				othello.retract(original, move);
-			}
+		}
+
+		void ASSERT_ALL_MOVES(Disc disc, const Moves& expectMoves)
+		{
+			Moves availableMoves = othello.thinkMoves(disc);
+			ASSERT_EQ(expectMoves, availableMoves);
 		}
 
 	protected:
@@ -24,8 +24,8 @@ namespace
 
 TEST_F(OthelloTest, should_get_available_moves_given_a_position_of_othello_board)
 {
-	Moves expectMoves{c4, e6};
-	ASSERT_EQ(othello.getAvailableMoves(e4), expectMoves);
+	ASSERT_OTHELLO(e4, Moves{c4, e6});
+	ASSERT_OTHELLO(d5, Moves{d3, f5});
 }
 
 TEST_F(OthelloTest, should_get_the_board_of_othello)
@@ -62,42 +62,23 @@ TEST_F(OthelloTest, should_refresh_the_board_given_another_board)
 	ASSERT_EQ(othello.getBoard().at(a1), B);
 }
 
-TEST_F(OthelloTest, should_capture_the_discs_given_the_original_and_move_position)
-{
-	Othello othello;
-	othello.refreshBoard(Board(GIVEN_BOARD));
-	ASSERT_EQ(othello.getBoard().at(a2), W);
-	ASSERT_EQ(othello.getBoard().at(a3), _);
-
-	const Board& board = othello.capture(a1, a3);
-	ASSERT_EQ(board.at(a2), B);
-	ASSERT_EQ(board.at(a3), B);
-}
-
-TEST_F(OthelloTest, should_retract_the_discs_given_the_original_and_move_position)
-{
-	Othello othello;
-	othello.refreshBoard(Board(GIVEN_BOARD));
-	othello.capture(a1, a3);
-	othello.retract(a1, a3);
-	ASSERT_EQ(othello.getBoard().at(a2), W);
-	ASSERT_EQ(othello.getBoard().at(a3), _);
-}
-
-TEST_F(OthelloTest, should_get_all_moves_given_a_square_position)
-{
-    ASSERT_OTHELLO(e4, Moves{c4, e6});
-    ASSERT_OTHELLO(d5, Moves{d3, f5});
-}
-
-TEST_F(OthelloTest, should_print_all_black_disc_moves_given_a_board)
+TEST_F(OthelloTest, should_get_all_available_moves_of_black_disc)
 {
 	Board board(GIVEN_BOARD);
 	othello.refreshBoard(board);
+	ASSERT_ALL_MOVES(B, Moves{a3, f6, c5, e6, c4, d6, a8});
+}
 
-    ASSERT_OTHELLO(a1, Moves{a3});
-    ASSERT_OTHELLO(c3, Moves{f6});
-    ASSERT_OTHELLO(e3, Moves{c5, e6});
-    ASSERT_OTHELLO(f4, Moves{c4, d6, f6});
-    ASSERT_OTHELLO(e8, Moves{a8});
+TEST_F(OthelloTest, should_print_all_black_disc_available_moves_board)
+{
+	Othello othello;
+	othello.refreshBoard(Board(GIVEN_BOARD));
+	Moves allMoves = othello.thinkMoves(B);
+
+	while( ! allMoves.isEmpty())
+	{
+		Position movePosition = allMoves.pop();
+		othello.capture(movePosition).print();
+		othello.retract();
+	}
 }

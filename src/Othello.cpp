@@ -1,54 +1,5 @@
 #include "Othello.h"
-
-namespace
-{
-    enum { ROW = 8, COLUMN = 8 };
-
-    bool isValid(Position p)
-    {
-        return p >= a1 && p <= h8;
-    }
-
-    Position up(Position p)
-    {
-        return static_cast<Position>(p - ROW);
-    }
-
-    Position down(Position p)
-    {
-        return static_cast<Position>(p + ROW);
-    }
-
-    Position left(Position p)
-    {
-        return static_cast<Position>(p - 1);
-    }
-
-    Position right(Position p)
-    {
-        return static_cast<Position>(p + 1);
-    }
-
-    Position leftUp(Position p)
-    {
-        return left(up(p));
-    }
-
-    Position leftDown(Position p)
-    {
-        return left(down(p));
-    }
-
-    Position rightUp(Position p)
-    {
-        return right(up(p));
-    }
-
-    Position rightDown(Position p)
-    {
-        return right(down(p));
-    }
-}
+#include "Direction.h"
 
 Othello::Othello()
 {
@@ -67,23 +18,33 @@ bool Othello::hasNext(Position curr, Position moves) const
 namespace
 {
 	Moves availableMoves;
+	Moves movesOriginalPosition[MAX_POSITION_NUM];
+
+	void clearMovesOriginalPosition()
+	{
+		for(int i = a1; i < MAX_POSITION_NUM; ++i)
+		{
+			movesOriginalPosition[i].clear();
+		}
+	}
 }
 
-void Othello::find(Position p, Action move)
+void Othello::find(Position p, const Removable& move)
 {
     if( ! board.isOccupied(p)) return;
 
     Position next = p;
     do
     {
-        next =  move(next);
+        next =  move.move(next);
     }while(hasNext(p, next));
 
-    if( ! isValid(next)) return;
+    if( ! board.onBoard(next)) return;
 
-    if( ! board.isOccupied(next) && next != move(p))
+    if( ! board.isOccupied(next) && next != move.move(p))
     {
     	availableMoves.push(next);
+    	movesOriginalPosition[next].push(p);
     }
 }
 
@@ -91,14 +52,14 @@ const Moves& Othello::getAvailableMoves(Position p)
 {
 	availableMoves.clear();
 
-	find(p, up);
-	find(p, down);
-	find(p, left);
-	find(p, right);
-	find(p, leftUp);
-	find(p, leftDown);
-	find(p, rightUp);
-	find(p, rightDown);
+	find(p, _up);
+	find(p, _down);
+	find(p, _left);
+	find(p, _right);
+	find(p, _left_up);
+	find(p, _left_down);
+	find(p, _right_up);
+	find(p, _right_down);
 
 	return availableMoves;
 }
@@ -108,12 +69,17 @@ namespace
 	Moves allMoves;
 }
 
-const Moves& Othello::getAllAvailableMoves(Disc disc)
+const Moves& Othello::thinkMoves(Disc disc)
 {
+	allMoves.clear();
+	clearMovesOriginalPosition();
 	for(int i = a1; i < MAX_POSITION_NUM; ++i)
 	{
 		Position p = static_cast<Position>(i);
-		if(board.at(p) == disc) allMoves = allMoves + getAvailableMoves(p);
+		if(board.at(p) == disc)
+		{
+			allMoves = allMoves + getAvailableMoves(p);
+		}
 	}
 
 	return allMoves;
@@ -121,59 +87,59 @@ const Moves& Othello::getAllAvailableMoves(Disc disc)
 
 namespace
 {
-    #define __min(a, b) ( (a)<(b)? (a):(b) )
-    #define __max(a, b) ( (a)>(b)? (a):(b) )
-
-    bool onARow(Position a, Position b)
-    {
-        return a/COLUMN == b/COLUMN; 
-    }
-
-    bool onAColumn(Position a, Position b)
-    {
-        return a%COLUMN == b%COLUMN;
-    }
-
-    bool onARightDiagonal(Position min, Position max)
-    {
-         return (max-min) % (COLUMN+1) == 0; 
-    }
-
-    bool onALeftDiagonal(Position min, Position max)
+	bool isReachable(Position from, Position to, const Removable& move)
 	{
-		 return (max-min) % (COLUMN-1) == 0;
+		for(int i = a1; i < MAX_POSITION_NUM; ++i)
+		{
+			from = move.move(from);
+			if(from == to) return true;
+		}
+
+		return false;
 	}
 }
 
-void Othello::doTurn(Position curr, Position moves)
+void Othello::doTurn(Position from, Position to, const Removable& move)
 {
-    Position max = __max(curr, moves);
-    Position min = __min(curr, moves);
-
-    int step = 0;
-    if(onARow(min, max)) step = 1;
-    if(onAColumn(min, max)) step = COLUMN;
-    if(onALeftDiagonal(min, max)) step = COLUMN - 1;
-    if(onARightDiagonal(min, max)) step = COLUMN + 1;
-
-    for(int i = min+step; i < max; i=i+step)
-    {
-        Position p = static_cast<Position>(i);
-        board.trueOver(p);
-    }
+	if(isReachable(from, to, move))
+	{
+		Position next = from;
+		while(next != to)
+		{
+			next = move.move(next);
+			board.trueOver(next);
+		}
+	}
 }
 
-const Board& Othello::capture(Position original, Position move)
+void Othello::turn(Position original, Position moves)
 {
-	board.place(move, board.at(original));
-	doTurn(original, move);
+	doTurn(original, moves, _up);
+	doTurn(original, moves, _down);
+	doTurn(original, moves, _left);
+	doTurn(original, moves, _right);
+	doTurn(original, moves, _left_up);
+	doTurn(original, moves, _left_down);
+	doTurn(original, moves, _right_up);
+	doTurn(original, moves, _right_down);
+}
+
+const Board& Othello::capture(Position movePosition)
+{
+	lastBoard = board;
+	while( ! movesOriginalPosition[movePosition].isEmpty())
+	{
+		Position originalPosition = movesOriginalPosition[movePosition].pop();
+		board.place(movePosition, board.at(originalPosition));
+		turn(originalPosition, movePosition);
+	}
+
 	return board;
 }
 
-const Board& Othello::retract(Position original, Position move)
+const Board& Othello::retract()
 {
-	doTurn(original, move);
-	board.place(move, _);
+	board = lastBoard;
 	return board;
 }
 
