@@ -3,24 +3,25 @@
 
 namespace
 {
-	struct OthelloTest : testing::Test
-	{
-		void ASSERT_OTHELLO(Position original, const Moves& expectMoves)
-		{
-			Moves availableMoves = othello.getAvailableMoves(original);
-			ASSERT_EQ(expectMoves, availableMoves);
-		}
 
-		void ASSERT_ALL_MOVES(Disc disc, const Moves& expectMoves)
-		{
-			Moves availableMoves = othello.thinkMoves(disc);
-			ASSERT_EQ(expectMoves, availableMoves);
-		}
-
-	protected:
-		Othello othello;
-	};
 }
+struct OthelloTest : testing::Test
+{
+	void ASSERT_OTHELLO(Position original, const Moves& expectMoves)
+	{
+		Moves availableMoves = othello.getAvailableMoves(original);
+		ASSERT_EQ(expectMoves, availableMoves);
+	}
+
+	void ASSERT_ALL_MOVES(Disc disc, const Moves& expectMoves)
+	{
+		Moves availableMoves = othello.thinkMoves(disc);
+		ASSERT_EQ(expectMoves, availableMoves);
+	}
+
+protected:
+	Othello othello;
+};
 
 TEST_F(OthelloTest, should_get_available_moves_given_a_position_of_othello_board)
 {
@@ -78,6 +79,7 @@ TEST_F(OthelloTest, should_print_all_black_disc_available_moves_board)
 	while( ! allMoves.isEmpty())
 	{
 		Position movePosition = allMoves.pop();
+		std::cout << to_str(movePosition) << std::endl;
 		othello.capture(movePosition).print();
 		othello.retract();
 	}

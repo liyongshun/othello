@@ -1,5 +1,6 @@
 #include "Othello.h"
 #include "Direction.h"
+#include "Position.h"
 
 Othello::Othello()
 {
@@ -103,11 +104,11 @@ void Othello::doTurn(Position from, Position to, const Removable& move)
 {
 	if(isReachable(from, to, move))
 	{
-		Position next = from;
+		Position next = move.move(from);
 		while(next != to)
 		{
-			next = move.move(next);
 			board.trueOver(next);
+			next = move.move(next);
 		}
 	}
 }
@@ -127,6 +128,7 @@ void Othello::turn(Position original, Position moves)
 const Board& Othello::capture(Position movePosition)
 {
 	lastBoard = board;
+
 	while( ! movesOriginalPosition[movePosition].isEmpty())
 	{
 		Position originalPosition = movesOriginalPosition[movePosition].pop();

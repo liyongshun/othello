@@ -42,7 +42,7 @@ namespace
 
 Disc Board::at(Position p) const
 {
-    if( ! isValid(p)) return nullDisc;
+    if( ! onBoard(p)) return nullDisc;
 
     return discs[p];
 }
@@ -87,19 +87,19 @@ void Board::trueOver(Position p)
 
 void Board::place(Position p, Disc disc)
 {
-	if( ! isValid(p)) return;
+	if( ! onBoard(p)) return;
 
 	discs[p] = disc;
 }
 
 bool Board::isOccupied(Position p) const
 {
-	if( ! isValid(p)) return false;
+	if( ! onBoard(p)) return false;
 
 	return discs[p] == B || discs[p] == W;
 }
 
-bool Board::onBoard(Position p) const
+bool Board::onBoard(Position p)
 {
 	return p >= a1 && p <= h8;
 }
@@ -114,7 +114,3 @@ bool Board::operator==(const Board& rsh) const
     return true;
 }
 
-bool Board::isValid(Position p) const
-{
-	return p >= a1 && p <= h8;
-}
